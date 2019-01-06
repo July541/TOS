@@ -17,6 +17,11 @@ protected:
 
     static GateDescriptor interruptDescriptorTable[256];
 
+    struct InterruptDescriptorTablePointer {
+        uint32_t size;
+        uint32_t base;
+    } __attribute__((packed));
+
     static void SetInterruptDescriptorTableEntry(
                                                  uint8_t interruptNumber,
                                                  uint16_t codeSegmentSelectorOffset,
@@ -25,12 +30,19 @@ protected:
                                                  uint8_t DescriptorType
                                                 );
 
+    Port8BitSlow picMasterCommand;
+    Port8BitSlow picMasterData;
+    Port8BitSlow picSlaveCommand;
+    Port8BitSlow picSlaveData;
+
 public:
 
     InterruptManager(GlobalDescriptorTable *gdt);
     ~InterruptManager();
 
-    static uint32_t handleInterrupt(uint8_t interruptNumber, uint32_t esp);
+    void Activate();
+
+    static uint32_t HandleInterrupt(uint8_t interruptNumber, uint32_t esp);
 
     static void IgnoreInterruptRequest();
     static void HandleInterruptRequest0x00();
